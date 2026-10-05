@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Memory Vault – lifetime access</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f3ec; --surface:#fffdf8; --surface-2:#f0ece1; --ink:#1d1b16; --muted:#6a655a; --line:#e2dccd;
+  --accent:#0f6b5c; --accent-ink:#ffffff; --accent-soft:#dcefe9; --wa:#1f9d55;
+  --shadow:0 1px 2px rgba(29,27,22,.06),0 10px 30px rgba(29,27,22,.06);
+  color-scheme:light; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#13120e; --surface:#1b1914; --surface-2:#24211a; --ink:#efeadf; --muted:#9d978b; --line:#2f2c24;
+    --accent:#4cc3a8; --accent-ink:#0b1f1a; --accent-soft:#16332c; --wa:#3ccf7d;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#13120e; --surface:#1b1914; --surface-2:#24211a; --ink:#efeadf; --muted:#9d978b; --line:#2f2c24;
+  --accent:#4cc3a8; --accent-ink:#0b1f1a; --accent-soft:#16332c; --wa:#3ccf7d;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35); color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2{font-family:'Source Serif 4',Georgia,'Times New Roman',serif;font-weight:600;letter-spacing:-.015em;line-height:1.15;margin:0}
+p{margin:0}
+.wrap{max-width:760px;margin:0 auto;padding:44px 20px 60px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Source Serif 4',Georgia,serif;font-weight:600;font-size:19px}
+.mark{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--accent);color:var(--accent-ink)}
+.hero{margin:34px 0 30px}
+.hero h1{font-size:clamp(32px,6vw,46px)}
+.hero p{margin-top:14px;font-size:18px;color:var(--muted);max-width:560px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:var(--shadow)}
+.stack>*+*{margin-top:18px}
+h2{font-size:22px;margin-bottom:12px}
+ul.feat{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+ul.feat li{display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start}
+.tick{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:13px;font-weight:700;margin-top:2px}
+ul.feat b{font-weight:600}
+.price{border:2px solid var(--accent)}
+.divider{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:14px;font-weight:500;margin-bottom:16px}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+.pay{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.pay a{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:18px;transition:border-color .15s,transform .15s}
+.pay a:hover{border-color:var(--accent);transform:translateY(-1px)}
+.pay a:focus-visible,.wa:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.pay .method{font-weight:600;font-size:15px;display:flex;align-items:center;gap:8px}
+.pay .where{font-size:13px;color:var(--muted)}
+.pay .amount{font-family:'Source Serif 4',Georgia,serif;font-size:30px;font-weight:600;line-height:1.1;margin-top:6px}
+.pay .go{margin-top:8px;font-size:14px;font-weight:600;color:var(--accent)}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.small{font-size:13px;color:var(--muted);margin-top:14px}
+ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:grid;gap:14px}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start}
+ol.steps li::before{content:counter(s);display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--bg);font-weight:600;font-size:14px}
+.wa{display:inline-flex;align-items:center;gap:10px;margin-top:16px;background:var(--wa);color:#fff;text-decoration:none;font-weight:600;padding:12px 18px;border-radius:12px}
+.wa:hover{filter:brightness(1.06)}
+details{border-top:1px solid var(--line);padding:12px 0}
+details:first-of-type{border-top:none}
+summary{cursor:pointer;font-weight:600}
+details p{margin-top:8px;color:var(--muted)}
+.foot{text-align:center;color:var(--muted);font-size:13px;margin-top:30px}
+@media (max-width:560px){.pay{grid-template-columns:1fr}.wrap{padding-top:28px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="brand"><span class="mark" aria-hidden="true">&#9680;</span>Memory Vault</div>
+
+  <section class="hero">
+    <h1>Your ideas, thoughts and plans, never lost again.</h1>
+    <p>Write things down as they come. Memory Vault files each one as a dated note on the right page, so you can pick up any project without starting from zero.</p>
+  </section>
+
+  <div class="stack">
+    <section class="card">
+      <h2>What you get</h2>
+      <ul class="feat">
+        <li><span class="tick">&#10003;</span><span><b>Notes filed for you.</b> Ideas, plans, decisions and thoughts, each saved with its date on the page it belongs to.</span></li>
+        <li><span class="tick">&#10003;</span><span><b>Turn long chats into clean notes.</b> Paste a conversation, let your own AI pull out the key points, and the important ones are checked before they are saved.</span></li>
+        <li><span class="tick">&#10003;</span><span><b>One-click review.</b> Anything that isn't certain waits for you to accept or discard, and every action can be undone.</span></li>
+        <li><span class="tick">&#10003;</span><span><b>Private folders.</b> Keep each client's work apart. A private folder never shows up anywhere else.</span></li>
+        <li><span class="tick">&#10003;</span><span><b>A ready context note for any AI.</b> Copy a short summary of what you already decided and paste it into a new chat, so you don't have to explain it all again.</span></li>
+        <li><span class="tick">&#10003;</span><span><b>Your notes stay with you.</b> They are saved in your own browser. No account, no sign-up. Back them up whenever you like.</span></li>
+      </ul>
+    </section>
+
+    <section class="card price" id="buy">
+      <h2>Get lifetime access</h2>
+      <div class="divider">One-time fee — lifetime access</div>
+      <div class="pay">
+        <a id="pay_instapay" href="https://ipn.eg/S/ahmedshoukry1991/instapay/0l8hm6" target="_blank" rel="noopener">
+          <span class="method"><span class="dot" style="background:#5a2d82"></span>InstaPay</span>
+          <span class="where">Inside Egypt</span>
+          <span class="amount">299 EGP</span>
+          <span class="go">Pay with InstaPay &rarr;</span>
+        </a>
+        <a id="pay_paypal" href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&amp;business=matt@paraguru.net&amp;amount=10&amp;currency_code=USD&amp;item_name=Memory+Vault+-+lifetime+access" target="_blank" rel="noopener">
+          <span class="method"><span class="dot" style="background:#0070ba"></span>PayPal</span>
+          <span class="where">Outside Egypt</span>
+          <span class="amount">$10</span>
+          <span class="go">Pay with PayPal &rarr;</span>
+        </a>
+      </div>
+      <p class="small">With InstaPay, enter 299 EGP as the amount if it is not filled in for you.</p>
+    </section>
+
+    <section class="card">
+      <h2>How you get it</h2>
+      <ol class="steps">
+        <li><span>Pay once with InstaPay or PayPal above.</span></li>
+        <li><span>Take a screenshot of your payment and send it to us on WhatsApp.</span></li>
+        <li><span>Once your payment is confirmed, you get your personal Memory Vault link on WhatsApp.</span></li>
+      </ol>
+      <a class="wa" id="send_receipt" href="https://wa.me/201111058060?text=Hi%2C%20I%20paid%20for%20Memory%20Vault%20(lifetime%20access).%20Here%20is%20my%20payment%20screenshot%3A" target="_blank" rel="noopener">Send my receipt on WhatsApp</a>
+    </section>
+
+    <section class="card">
+      <h2>Questions</h2>
+      <details><summary>Is this a subscription?</summary><p>No. You pay once and keep access for life.</p></details>
+      <details><summary>Where are my notes saved?</summary><p>In the browser you use it in, on your own device. Use the Backup tab now and then to keep a copy, because clearing your browser data also clears your notes.</p></details>
+      <details><summary>Do I need an account or an AI subscription?</summary><p>No account is needed. The AI step is optional: you can copy a prompt into any AI you already use, or just write your notes yourself.</p></details>
+      <details><summary>Does it work in Arabic?</summary><p>Yes. Arabic notes are shown right to left. The buttons and menus are in English.</p></details>
+    </section>
+  </div>
+
+  <p class="foot">Questions before you buy? Message us on <a href="https://wa.me/201111058060" target="_blank" rel="noopener" style="color:inherit">WhatsApp</a>.</p>
+</main>
+</body>
+</html>
