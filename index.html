@@ -6,7 +6,7 @@
 <title>Memory Vault – free 7-day trial</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#f6f3ec; --surface:#fffdf8; --surface-2:#f0ece1; --ink:#1d1b16; --muted:#6a655a; --line:#e2dccd;
@@ -48,7 +48,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .bar{max-width:920px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:9px;font-family:'Source Serif 4',Georgia,serif;font-weight:600;font-size:20px}
 .mark{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent);color:var(--accent-ink);font-size:16px}
-.scope{display:flex;align-items:center;gap:8px;margin-left:auto}
+.scope{display:flex;align-items:center;gap:8px;margin-left:auto;margin-inline-start:auto}
 .scope label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 .tools{display:flex;gap:8px}
 .tabs{max-width:920px;margin:0 auto;padding:0 18px 10px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
@@ -142,7 +142,7 @@ details summary{cursor:pointer;color:var(--accent);font-weight:500;margin-top:10
 .mrow:hover,.mrow.on{background:var(--surface-2)}
 .mrow-t{display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mrow-n{font-size:12.5px;color:var(--muted)}
-.mrow-bar{position:absolute;left:8px;bottom:4px;height:2px;background:currentColor;border-radius:2px;max-width:calc(100% - 16px)}
+.mrow-bar{position:absolute;inset-inline-start:8px;bottom:4px;height:2px;background:currentColor;border-radius:2px;max-width:calc(100% - 16px)}
 .shape{display:inline-block;width:9px;height:9px;flex:0 0 auto}
 .s-project{background:var(--accent)} .s-person{background:var(--warn);border-radius:50%} .s-topic{background:var(--topic);transform:rotate(45deg) scale(.85)}
 .c-project{color:var(--accent)} .c-person{color:var(--warn)} .c-topic{color:var(--topic)}
@@ -220,6 +220,16 @@ ol.lp-steps li::before{content:counter(s);display:inline-grid;place-items:center
 .trialbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid var(--line);background:var(--accent-soft);color:var(--ink);border-radius:12px;padding:10px 14px;font-size:14px}
 .trialbar.ended{background:var(--warn-soft);border-color:var(--warn)}
 @media (max-width:560px){.pay{grid-template-columns:1fr}}
+.lp-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.lang-btn{font-weight:600;font-family:'IBM Plex Sans Arabic','Inter',system-ui,sans-serif}
+html[lang="ar"] body,html[lang="ar"] button,html[lang="ar"] input,html[lang="ar"] select,html[lang="ar"] textarea{font-family:'IBM Plex Sans Arabic','Inter',system-ui,-apple-system,'Segoe UI',Tahoma,sans-serif}
+html[lang="ar"] h1,html[lang="ar"] h2,html[lang="ar"] h3,html[lang="ar"] .brand,html[lang="ar"] .stat b,html[lang="ar"] .pay .amount,html[lang="ar"] .page-card .t,html[lang="ar"] .empty b{font-family:'IBM Plex Sans Arabic','Source Serif 4',Georgia,serif;font-weight:600}
+html[lang="ar"] *{letter-spacing:0 !important}
+html[lang="ar"] .scope label,html[lang="ar"] .mlabel{text-transform:none}
+html[lang="ar"] body{line-height:1.75}
+html[lang="ar"] .mapsvg .mlbl{font-family:'IBM Plex Sans Arabic','Inter',system-ui,sans-serif}
+.mapsvg{direction:ltr}
+#code-in{text-align:left}
 </style>
 </head>
 <body>
@@ -243,7 +253,7 @@ const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov',
 const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-5);
 function localDate(d){d=d||new Date();const z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate());}
 function daysAgo(n){const d=new Date();d.setDate(d.getDate()-n);return localDate(d);}
-function fmtDate(s){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s||''));return m?(+m[3])+' '+MONTHS[+m[2]-1]+' '+m[1]:String(s||'');}
+function fmtDate(s){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s||''));return m?(+m[3])+' '+(LANG==='ar'?AR_MONTHS:MONTHS)[+m[2]-1]+' '+m[1]:String(s||'');}
 const str=v=>(v==null?'':String(v)).trim();
 function normalizeDigits(s){return String(s||'').replace(/[\u0660-\u0669]/g,c=>String(c.charCodeAt(0)-1632)).replace(/[\u06F0-\u06F9]/g,c=>String(c.charCodeAt(0)-1776));}
 const stripCommas=s=>s.replace(/(\d)[,\u066C](?=\d)/g,'$1');
@@ -332,6 +342,81 @@ function enterCode(raw){
   lic.code=v.code; saveLic(); return {code:v.code,name:mvNiceName(v.name)};
 }
 const LOCKED_OK=new Set(['Restore backup','Delete everything']);
+
+/* ===================== language: English / Arabic ===================== */
+const LANG_KEY='memoryVault.lang';
+let LANG=(function(){const v=readStore(LANG_KEY);if(v==='ar'||v==='en')return v;
+  try{return /^ar\b/i.test((navigator.languages&&navigator.languages[0])||navigator.language||'')?'ar':'en';}catch(e){return 'en';}})();
+const AR={"Decision": "قرار", "Update": "تحديث", "Plan": "خطة", "Idea": "فكرة", "Preference": "تفضيل", "Thought": "خاطرة", "Outcome": "نتيجة", "Rejected option": "خيار مرفوض", "AI · passed checks": "ذكاء اصطناعي · اجتاز الفحص", "AI · you confirmed": "ذكاء اصطناعي · أكّدته أنت", "project": "مشروع", "person": "شخص", "topic": "موضوع", "General": "عام", "Open pages": "الصفحات المفتوحة", "That code is not right. Check it and try again, or message us on WhatsApp.": "هذا الرمز غير صحيح. تأكّد منه وحاول مرة أخرى، أو راسلنا على واتساب.", "Nothing to undo.": "لا يوجد ما يمكن التراجع عنه.", "Your free trial has ended. Enter your access code to keep adding and changing notes.": "انتهت تجربتك المجانية. أدخل رمز الدخول لتواصل إضافة الملاحظات وتعديلها.", "Start your free trial first.": "ابدأ تجربتك المجانية أولًا.", "Something went wrong.": "حدث خطأ ما.", "Name the page first.": "اكتب اسم الصفحة أولًا.", "Write something first.": "اكتب شيئًا أولًا.", "That page is not available here.": "هذه الصفحة غير متاحة هنا.", "Name the page this belongs to.": "اكتب اسم الصفحة التي تنتمي إليها الملاحظة.", "Paste your AI's reply first.": "الصق رد الذكاء الاصطناعي أولًا.", "I could not find a JSON list in that reply.": "لم أجد قائمة JSON في هذا الرد.", "That reply is not valid JSON. Ask your AI to reply with the list only.": "هذا الرد ليس JSON صالحًا. اطلب من الذكاء الاصطناعي أن يرد بالقائمة فقط.", "Expected a list of facts.": "كان المتوقع قائمة من المعلومات.", "That item is gone.": "هذا العنصر لم يعد موجودًا.", "That item belongs to a private folder.": "هذا العنصر يتبع مجلدًا خاصًا.", "Write the new status first.": "اكتب الحالة الجديدة أولًا.", "That is already the status.": "هذه هي الحالة الحالية بالفعل.", "That line cannot be corrected.": "لا يمكن تصحيح هذا السطر.", "Write the corrected line first.": "اكتب السطر المصحَّح أولًا.", "That is the same as the current line.": "هذا مطابق للسطر الحالي.", "Pick a folder.": "اختر مجلدًا.", "Choose a page to link.": "اختر صفحة لربطها.", "A page cannot link to itself.": "لا يمكن ربط الصفحة بنفسها.", "These pages are already linked.": "هاتان الصفحتان مرتبطتان بالفعل.", "Name the folder first.": "اكتب اسم المجلد أولًا.", "A folder with that name exists.": "يوجد مجلد بهذا الاسم بالفعل.", "Folder not found.": "المجلد غير موجود.", "Keep at least one open folder.": "يجب أن يبقى مجلد مفتوح واحد على الأقل.", "Move or delete what is inside it first.": "انقل أو احذف ما بداخله أولًا.", "That is not valid JSON.": "هذا ليس JSON صالحًا.", "That does not look like a Memory Vault backup.": "هذا لا يبدو نسخة احتياطية من Memory Vault.", "Copied.": "تم النسخ.", "Could not copy automatically. Select the text and copy it yourself.": "تعذّر النسخ تلقائيًا. حدّد النص وانسخه بنفسك.", "Correct a line": "تصحيح سطر", "Load example data": "تحميل بيانات تجريبية", "Accept a fact": "قبول معلومة", "Discard a fact": "تجاهل معلومة", "Make folder open": "جعل المجلد مفتوحًا", "Make folder private": "جعل المجلد خاصًا", "Delete folder": "حذف مجلد", "Add folder": "إضافة مجلد", "Move page": "نقل صفحة", "Change status": "تغيير الحالة", "Link pages": "ربط صفحات", "Unlink pages": "فك ربط صفحات", "Delete page": "حذف صفحة", "Restore backup": "استعادة نسخة احتياطية", "Delete everything": "حذف كل شيء", "Corrected line": "السطر المصحَّح", "Corrected. The old line is kept as history.": "تم التصحيح. السطر القديم محفوظ في السجل.", "Save correction": "حفظ التصحيح", "Cancel": "إلغاء", "Correct": "تصحيح", "Working in": "العمل في", "Open pages only": "الصفحات المفتوحة فقط", "Nothing to undo": "لا يوجد ما يمكن التراجع عنه", "Undo": "تراجع", "Change theme": "تغيير المظهر", "Home": "الرئيسية", "Add": "إضافة", "Distill": "الاستخلاص", "Review": "المراجعة", "Pages": "الصفحات", "Map": "الخريطة", "Dossier": "ملف السياق", "This week": "هذا الأسبوع", "Backup": "النسخ الاحتياطي", "Sections": "الأقسام", "Your memory, kept in order": "ذاكرتك، مرتبة دائمًا", "Write ideas, thoughts and plans as they come. Memory Vault files each one as a dated line on the right page, so nothing gets lost between days.": "اكتب أفكارك وخواطرك وخططك فور ورودها. يحفظ Memory Vault كل واحدة منها كسطر مؤرَّخ في الصفحة المناسبة، فلا يضيع شيء مع مرور الأيام.", "Add my first note": "أضِف ملاحظتي الأولى", "Example data loaded. Reset it any time in Backup.": "تم تحميل البيانات التجريبية. يمكنك حذفها في أي وقت من النسخ الاحتياطي.", "Try with example data": "جرّب ببيانات تجريبية", "Notes in the last 7 days": "ملاحظات آخر 7 أيام", "Waiting in Review": "بانتظار المراجعة", "Latest": "الأحدث", "Nothing yet. Add a note and it shows up here.": "لا شيء بعد. أضف ملاحظة وستظهر هنا.", "An idea, a thought, a plan, a decision…": "فكرة، خاطرة، خطة، قرار…", "＋ New page…": "＋ صفحة جديدة…", "Kind": "النوع", "Page": "الصفحة", "e.g. Website relaunch": "مثال: إعادة إطلاق الموقع", "New page name": "اسم الصفحة الجديدة", "Type": "نوع الصفحة", "Add a note": "أضِف ملاحظة", "It is saved as a dated line on the page you choose. Your own words go in directly.": "تُحفظ كسطر مؤرَّخ في الصفحة التي تختارها. كلماتك تُضاف مباشرة.", "What is on your mind?": "ما الذي يدور في ذهنك؟", "Save to memory": "احفظ في الذاكرة", "Paste a conversation, meeting notes or a voice-note transcript…": "الصق محادثة أو ملاحظات اجتماع أو نصًا مفرّغًا من رسالة صوتية…", "Paste the JSON list your AI sends back…": "الصق قائمة JSON التي يرسلها لك الذكاء الاصطناعي…", "Distill with your own AI": "استخلِص بمساعدة الذكاء الاصطناعي الذي تستخدمه", "Memory Vault never sends anything anywhere. You copy a prompt into the AI you already use, then paste its answer back. Each fact is checked here before it is filed.": "لا يرسل Memory Vault أي شيء إلى أي مكان. تنسخ أمرًا (برومبت) إلى الذكاء الاصطناعي الذي تستخدمه، ثم تلصق رده هنا. تُفحص كل معلومة هنا قبل حفظها.", "1. The text to learn from": "1. النص المطلوب التعلّم منه", "Paste some text first.": "الصق نصًا أولًا.", "Prompt copied. Paste it into your AI.": "تم نسخ الأمر. الصقه في الذكاء الاصطناعي الذي تستخدمه.", "2. Copy the prompt for my AI": "2. انسخ الأمر للذكاء الاصطناعي", "The prompt": "الأمر", "Show the prompt": "اعرض الأمر", "3. Your AI's reply": "3. رد الذكاء الاصطناعي", "4. Check and file": "4. افحص واحفظ", "The quote must appear in your text, and the subject and any numbers must appear in the quote.": "يجب أن يكون الاقتباس موجودًا في نصك، وأن يكون الموضوع وأي أرقام مذكورة في الاقتباس.", "It must be marked as said by you, not pasted from someone else.": "يجب أن يكون مُعلَّمًا على أنه من كلامك، لا منقولًا عن شخص آخر.", "Facts that pass go to a page that already exists. Everything else waits in Review.": "المعلومات التي تجتاز الفحص تُحفظ في صفحة موجودة. وكل ما عداها ينتظر في المراجعة.", "Go to Review": "اذهب إلى المراجعة", "These facts were not filed on their own. One click files one, and Undo reverses it.": "لم تُحفظ هذه المعلومات تلقائيًا. نقرة واحدة تحفظ أيًّا منها، وزر التراجع يلغي ذلك.", "Nothing is waiting": "لا شيء بالانتظار", "Facts the checks are unsure about will appear here, grouped by subject.": "المعلومات التي لم يتأكد منها الفحص ستظهر هنا، مجمّعة حسب الموضوع.", "Page type": "نوع الصفحة", "Accept all": "قبول الكل", "Accept": "قبول", "Discard": "تجاهل", "the quote is not in the text you pasted": "الاقتباس غير موجود في النص الذي ألصقته", "the subject is not in the quote": "الموضوع غير مذكور في الاقتباس", "not marked as said by you": "غير مُعلَّم على أنه من كلامك", "no page exists yet": "لا توجد صفحة له بعد", "Search pages and notes…": "ابحث في الصفحات والملاحظات…", "No matches": "لا توجد نتائج", "No pages yet": "لا توجد صفحات بعد", "Try different words.": "جرّب كلمات أخرى.", "Add a note and its page is created for you.": "أضف ملاحظة وستُنشأ صفحتها تلقائيًا.", "Everything you have saved, kept as plain dated lines.": "كل ما حفظته، في أسطر بسيطة مؤرَّخة.", "Search": "بحث", "e.g. Client B": "مثال: العميل ب", "Folders and private walls": "المجلدات والجدران الخاصة", "A private folder is a wall. Its notes never show in search, Dossier, This week or Review unless you choose that folder in \"Working in\". Nothing inside it reaches pages outside it.": "المجلد الخاص جدار عازل. لا تظهر ملاحظاته في البحث أو ملف السياق أو هذا الأسبوع أو المراجعة إلا إذا اخترت هذا المجلد في «العمل في». ولا يصل شيء مما بداخله إلى الصفحات خارجه.", "🔒 Private": "🔒 خاص", "Open": "مفتوح", "Make open": "اجعله مفتوحًا", "Make private": "اجعله خاصًا", "Delete": "حذف", "Click again to delete": "اضغط مرة أخرى للحذف", "New folder": "مجلد جديد", "Private": "خاص", "Folder added.": "تمت إضافة المجلد.", "Folder": "المجلد", "Moved to a private folder. It is hidden unless you work in that folder.": "نُقلت إلى مجلد خاص. ستبقى مخفية إلا إذا عملت داخل ذلك المجلد.", "e.g. In progress": "مثال: قيد التنفيذ", "Add a note to this page…": "أضف ملاحظة إلى هذه الصفحة…", "← All pages": "→ كل الصفحات", "No status": "بلا حالة", "Update status": "تحديث الحالة", "Status updated. The old one is kept.": "تم تحديث الحالة. الحالة السابقة محفوظة.", "Save status": "حفظ الحالة", "Choose a page…": "اختر صفحة…", "Linked pages": "الصفحات المرتبطة", "Linked pages are joined by a solid line on the Map. A dotted line appears on its own when a note names another page.": "الصفحات المرتبطة يجمعها خط متصل على الخريطة. ويظهر خط منقّط تلقائيًا عندما تذكر ملاحظةٌ اسمَ صفحة أخرى.", "Unlink": "فك الربط", "Link to": "اربط بـ", "Linked.": "تم الربط.", "Link": "ربط", "No other pages to link in this view yet.": "لا توجد صفحات أخرى للربط في هذا العرض بعد.", "Note": "الملاحظة", "Added.": "تمت الإضافة.", "Save note": "حفظ الملاحظة", "History": "السجل", "Hide corrected lines": "إخفاء الأسطر المصحَّحة", "No notes yet.": "لا توجد ملاحظات بعد.", "Delete this page": "حذف هذه الصفحة", "Page deleted. Undo is at the top.": "تم حذف الصفحة. زر التراجع في الأعلى.", "All pages in this view": "كل الصفحات في هذا العرض", "Dossier text": "نص ملف السياق", "Which pages": "أي صفحات", "Notes per page": "عدد الملاحظات لكل صفحة", "Build dossier": "إنشاء ملف السياق", "Dossier copied. Paste it into your AI.": "تم نسخ ملف السياق. الصقه في الذكاء الاصطناعي.", "Copy": "نسخ", "Summary copied.": "تم نسخ الملخص.", "Copy summary": "نسخ الملخص", "A quiet week": "أسبوع هادئ", "Notes you add will be listed here by page.": "الملاحظات التي تضيفها ستظهر هنا حسب الصفحة.", "Export": "التصدير", "Paste a JSON backup here to restore it…": "الصق هنا نسخة احتياطية بصيغة JSON لاستعادتها…", "Your notes live in this browser only. Copy a backup now and then, and keep it somewhere safe.": "ملاحظاتك محفوظة في هذا المتصفح فقط. انسخ نسخة احتياطية من حين لآخر واحتفظ بها في مكان آمن.", "Full backup (JSON)": "نسخة احتياطية كاملة (JSON)", "Readable export (Markdown)": "تصدير قابل للقراءة (Markdown)", "Restore": "الاستعادة", "This replaces everything in this browser with the backup. Undo can bring it back during this visit.": "سيستبدل هذا كل ما في هذا المتصفح بالنسخة الاحتياطية. يمكن لزر التراجع إعادته خلال هذه الزيارة.", "Restore from backup": "استعادة من نسخة احتياطية", "Click again to replace everything": "اضغط مرة أخرى لاستبدال كل شيء", "Backup restored.": "تمت استعادة النسخة الاحتياطية.", "Start over": "البدء من جديد", "Deletes every folder, page and waiting item in this browser.": "يحذف كل المجلدات والصفحات والعناصر المنتظرة في هذا المتصفح.", "Click again to delete everything": "اضغط مرة أخرى لحذف كل شيء", "Everything deleted.": "تم حذف كل شيء.", "Saving is not available in this window, so notes only last until you close it. Use Backup to keep a copy.": "الحفظ غير متاح في هذه النافذة، لذا ستبقى الملاحظات حتى تغلقها فقط. استخدم النسخ الاحتياطي للاحتفاظ بنسخة.", "Knowledge Map": "خريطة المعرفة", "Nothing to map yet": "لا يوجد ما يُعرض على الخريطة بعد", "Add notes to a few pages. When a note names another page, a line appears between them.": "أضف ملاحظات إلى بعض الصفحات. عندما تذكر ملاحظةٌ اسمَ صفحة أخرى، يظهر خط بينهما.", "Show only": "اعرض فقط", "Whole map": "الخريطة كاملة", "Open page": "فتح الصفحة", "Linked by you": "ربطتها بنفسك", "No connections yet. Name another page in a note, or link pages from the page screen.": "لا توجد روابط بعد. اذكر اسم صفحة أخرى في ملاحظة، أو اربط الصفحات من شاشة الصفحة.", "you linked it": "ربطتها بنفسك", "mentioned together": "ذُكرتا معًا", "bar length: notes on or mentioning it": "طول الشريط: الملاحظات المكتوبة فيها أو التي تذكرها", "No lines yet. Name another page in a note, or link two pages from the page screen.": "لا توجد خطوط بعد. اذكر اسم صفحة أخرى في ملاحظة، أو اربط صفحتين من شاشة الصفحة.", "Get lifetime access": "احصل على وصول مدى الحياة", "One-time fee — lifetime access": "دفعة واحدة — وصول مدى الحياة", "InstaPay": "إنستاباي", "Inside Egypt": "داخل مصر", "499 EGP": "499 جنيه", "Pay with InstaPay →": "ادفع عبر إنستاباي ←", "PayPal": "باي بال", "Outside Egypt": "خارج مصر", "Pay with PayPal →": "ادفع عبر باي بال ←", "With InstaPay, enter 499 EGP as the amount if it is not filled in for you.": "عند الدفع عبر إنستاباي، اكتب المبلغ 499 جنيه إن لم يظهر تلقائيًا.", "e.g. SARA-7K2PQX": "مثال: SARA-7K2PQX", "Already paid? Enter your access code": "دفعت بالفعل؟ أدخل رمز الدخول", "You get your personal code on WhatsApp after your payment is confirmed.": "سيصلك رمزك الشخصي على واتساب بعد تأكيد الدفع.", "Access code": "رمز الدخول", "Unlock": "فتح القفل", "How you get it": "كيف تحصل عليه", "Pay once with InstaPay or PayPal.": "ادفع مرة واحدة عبر إنستاباي أو باي بال.", "Send a screenshot of your payment to us on WhatsApp.": "أرسل لنا لقطة شاشة للدفع على واتساب.", "Get your personal access code on WhatsApp and enter it here. Memory Vault unlocks for life, and everything you added during the trial stays.": "استلم رمز الدخول الشخصي على واتساب وأدخله هنا. يُفتح Memory Vault مدى الحياة، ويبقى كل ما أضفته خلال التجربة.", "Send my receipt on WhatsApp": "أرسل إيصال الدفع على واتساب", "What happens when the free trial ends?": "ماذا يحدث عند انتهاء التجربة المجانية؟", "Your notes stay safe. You can still read them, open the Map and copy a backup. To keep adding and changing notes, buy lifetime access and enter your access code.": "تبقى ملاحظاتك آمنة. يمكنك قراءتها وفتح الخريطة ونسخ نسخة احتياطية. ولتواصل إضافة الملاحظات وتعديلها، اشترِ الوصول مدى الحياة وأدخل رمز الدخول.", "Is this a subscription?": "هل هذا اشتراك شهري؟", "No. You pay once and keep access for life.": "لا. تدفع مرة واحدة ويبقى الوصول متاحًا لك مدى الحياة.", "Where are my notes saved?": "أين تُحفظ ملاحظاتي؟", "In the browser you use it in, on your own device. Keep using the same browser, and copy a backup from the Backup tab now and then, because clearing your browser data also clears your notes.": "في المتصفح الذي تستخدمه، على جهازك أنت. استمر في استخدام المتصفح نفسه، وانسخ نسخة احتياطية من تبويب النسخ الاحتياطي من حين لآخر، لأن مسح بيانات المتصفح يمسح ملاحظاتك أيضًا.", "Do I need an account or an AI subscription?": "هل أحتاج إلى حساب أو اشتراك في الذكاء الاصطناعي؟", "No account is needed. The AI step is optional: you can copy a prompt into any AI you already use, or just write your notes yourself.": "لا تحتاج إلى حساب. خطوة الذكاء الاصطناعي اختيارية: يمكنك نسخ أمر إلى أي ذكاء اصطناعي تستخدمه، أو كتابة ملاحظاتك بنفسك.", "Does it work in Arabic?": "هل يعمل باللغة العربية؟", "Yes. Use the language button at the top to switch the whole app to Arabic. Arabic notes are shown right to left.": "نعم. استخدم زر اللغة في الأعلى لتحويل التطبيق كله إلى العربية. وتُعرض الملاحظات العربية من اليمين إلى اليسار.", "Questions": "أسئلة شائعة", "Notes filed for you.": "ملاحظات تُرتَّب لك.", "Ideas, plans, decisions and thoughts, each saved with its date on the page it belongs to.": "أفكار وخطط وقرارات وخواطر، تُحفظ كل واحدة بتاريخها في الصفحة التي تنتمي إليها.", "A living Knowledge Map.": "خريطة معرفة حيّة.", "See every project, person and topic on one animated ring, with lines showing how they connect.": "شاهد كل مشروع وشخص وموضوع على دائرة متحركة واحدة، مع خطوط توضح كيف يرتبط بعضها ببعض.", "Turn long chats into clean notes.": "حوّل المحادثات الطويلة إلى ملاحظات واضحة.", "Paste a conversation, let your own AI pull out the key points, and the important ones are checked before they are saved.": "الصق محادثة، ودع الذكاء الاصطناعي الذي تستخدمه يستخرج أهم النقاط، وتُفحص المهمة منها قبل حفظها.", "One-click review.": "مراجعة بنقرة واحدة.", "Anything that isn’t certain waits for you to accept or discard, and every action can be undone.": "كل ما هو غير مؤكد ينتظر قبولك أو تجاهلك، ويمكن التراجع عن أي خطوة.", "Private folders.": "مجلدات خاصة.", "Keep each client’s work apart. A private folder never shows up anywhere else.": "افصل عمل كل عميل عن غيره. المجلد الخاص لا يظهر في أي مكان آخر.", "A ready context note for any AI.": "ملف سياق جاهز لأي ذكاء اصطناعي.", "Copy a short summary of what you already decided and paste it into a new chat.": "انسخ ملخصًا قصيرًا لما قررته بالفعل والصقه في محادثة جديدة.", "Your notes stay with you.": "ملاحظاتك تبقى معك.", "They are saved in your own browser. No account, no sign-up. Back them up whenever you like.": "تُحفظ في متصفحك أنت. بلا حساب وبلا تسجيل. واحتفظ بنسخة احتياطية متى شئت.", "Your ideas, thoughts and plans, never lost again.": "أفكارك وخواطرك وخططك، لن تضيع بعد اليوم.", "Write things down as they come. Memory Vault files each one as a dated note on the right page, so you can pick up any project without starting from zero.": "دوّن الأشياء فور ورودها. يحفظ Memory Vault كلًّا منها كملاحظة مؤرَّخة في الصفحة المناسبة، لتعود إلى أي مشروع دون أن تبدأ من الصفر.", "Your 7-day free trial has started. Enjoy!": "بدأت تجربتك المجانية لمدة 7 أيام. استمتع!", "Start your 7-day free trial": "ابدأ تجربتك المجانية لمدة 7 أيام", "No account, no card. Everything unlocked for 7 days.": "بلا حساب وبلا بطاقة. كل المزايا متاحة لمدة 7 أيام.", "What you get": "ما الذي تحصل عليه", "Questions before you buy? Message us on": "لديك أسئلة قبل الشراء؟ راسلنا على", "WhatsApp": "واتساب", "Your free trial has ended. Your notes are safe. Unlock to keep adding and changing them.": "انتهت تجربتك المجانية. ملاحظاتك آمنة. افتح القفل لتواصل إضافتها وتعديلها.", "You have lifetime access": "لديك وصول مدى الحياة", "Lifetime access": "الوصول مدى الحياة", "Free trial:": "التجربة المجانية:", "Buy lifetime access": "اشترِ الوصول مدى الحياة", "Your free trial has ended.": "انتهت تجربتك المجانية.", "Your notes are safe and you can still read them. Unlock to keep adding notes.": "ملاحظاتك آمنة ويمكنك قراءتها. افتح القفل لتواصل إضافة الملاحظات."};
+const AR_MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const AR_UNITS={note:['ملاحظة واحدة','ملاحظتان','ملاحظات','ملاحظة'],page:['صفحة واحدة','صفحتان','صفحات','صفحة'],day:['يوم واحد','يومان','أيام','يومًا'],fact:['معلومة واحدة','معلومتان','معلومات','معلومة']};
+function plN(n,u){n=+n;const f=AR_UNITS[u];if(n===1)return f[0];if(n===2)return f[1];const r=n%100;return n+' '+((r>=3&&r<=10)?f[2]:f[3]);}
+const AR_TYPE={project:'مشروع',person:'شخص',topic:'موضوع'};
+const scAR=x=>AR[x]||x;
+function reasonAR(r){const m=/^the number (.+) is not in the quote$/.exec(r);return m?'الرقم '+m[1]+' غير موجود في الاقتباس':(AR[r]||r);}
+const PAT=[
+  [/^Undone: (.+)$/,m=>'تم التراجع: '+tr(m[1])],
+  [/^Undo: (.+)$/,m=>'تراجع: '+tr(m[1])],
+  [/^Theme: (auto|light|dark)$/,m=>'المظهر: '+{auto:'تلقائي',light:'فاتح',dark:'داكن'}[m[1]]],
+  [/^Saved to "(.*)"\.$/,m=>'تم الحفظ في «'+m[1]+'».'],
+  [/^\u{1F512} Working in "(.*)"\. (\d+) private folders? (?:are|is) hidden from this view\.$/u,m=>'\u{1F512} العمل في «'+scAR(m[1])+'». عدد المجلدات الخاصة المخفية عن هذا العرض: '+m[2]+'.'],
+  [/^\u{1F512} Working in "(.*)"\. No private folders are hidden\.$/u,m=>'\u{1F512} العمل في «'+scAR(m[1])+'». لا توجد مجلدات خاصة مخفية.'],
+  [/^Distill (\d+) facts$/,m=>'استخلاص '+plN(m[1],'fact')],
+  [/^Accept (\d+) facts$/,m=>'قبول '+plN(m[1],'fact')],
+  [/^Add (.+)$/,m=>'إضافة '+tr(m[1])],
+  [/^(\d+) filed, (\d+) waiting for you$/,m=>'حُفظ '+m[1]+'، و'+m[2]+' بانتظار مراجعتك'],
+  [/^Filed to "(.*)"\.$/,m=>'تم الحفظ في «'+m[1]+'».'],
+  [/^Filed to (.*)$/,m=>'حُفظت في «'+m[1]+'»'],
+  [/^Filed (\d+)\.$/,m=>'تم حفظ '+plN(m[1],'fact')+'.'],
+  [/^Adds to the page "(.*)"\.$/,m=>'ستُضاف إلى صفحة «'+m[1]+'».'],
+  [/^Creates a new page "(.*)"\.$/,m=>'ستُنشأ صفحة جديدة باسم «'+m[1]+'».'],
+  [/^Held: (.+)$/,m=>'سبب الانتظار: '+reasonAR(m[1])],
+  [/^(\d+) notes$/,m=>plN(m[1],'note')],
+  [/^(\d+) pages?$/,m=>plN(m[1],'page')],
+  [/^(.*) \(private\)$/,m=>scAR(m[1])+' (خاص)'],
+  [/^Status: (.*)$/,m=>'الحالة: '+m[1]],
+  [/^Before: (.*)$/,m=>'السابق: '+m[1].replace(/ until /g,' حتى ')],
+  [/^Show corrected lines \((\d+)\)$/,m=>'إظهار الأسطر المصحَّحة ('+m[1]+')'],
+  [/^Replaced on (.+)\. Kept as history\.$/,m=>'استُبدل في '+m[1]+'. محفوظ في السجل.'],
+  [/^A short note of what you already decided and said\. Paste it at the start of a new AI session so you do not have to explain it again\. It only includes what is visible in "(.*)"\.$/,m=>'ملاحظة قصيرة بما قررته وقلته بالفعل. الصقها في بداية أي محادثة جديدة مع الذكاء الاصطناعي حتى لا تضطر إلى الشرح من جديد. تتضمن فقط ما هو ظاهر في «'+scAR(m[1])+'».'],
+  [/^What was added in the last 7 days, across the pages in "(.*)"\.$/,m=>'ما أُضيف خلال آخر 7 أيام في صفحات «'+scAR(m[1])+'».'],
+  [/^The full backup includes private folders\. The Markdown export only includes what is visible in "(.*)"\.$/,m=>'النسخة الاحتياطية الكاملة تشمل المجلدات الخاصة. أما تصدير Markdown فيشمل فقط ما هو ظاهر في «'+scAR(m[1])+'».'],
+  [/^Nothing is sent anywhere unless you copy a prompt into your own AI\.(?: Lifetime access: (.*)\.)?$/,m=>'لا يُرسل أي شيء إلى أي مكان إلا إذا نسخت أمرًا إلى الذكاء الاصطناعي الذي تستخدمه.'+(m[1]?' وصول مدى الحياة: '+m[1]+'.':'')],
+  [/^Every page and how it connects, in "(.*)"\. Click a page to bring it forward\.$/,m=>'كل صفحة وكيف ترتبط بغيرها، في «'+scAR(m[1])+'». اضغط على صفحة لتقديمها إلى الأمام.'],
+  [/^(Projects|People|Topics) (\d+)$/,m=>({Projects:'المشاريع',People:'الأشخاص',Topics:'المواضيع'})[m[1]]+' '+m[2]],
+  [/^(\d+) pages, by size$/,m=>plN(m[1],'page')+'، مرتبة حسب الحجم'],
+  [/^(\d+) of (\d+) names shown( \u00B7 click a page for more)?$/,m=>'يظهر '+m[1]+' من '+m[2]+' اسمًا'+(m[3]?' \u00B7 اضغط على صفحة لرؤية المزيد':'')],
+  [/^Knowledge map: (\d+) pages, (\d+) connections$/,m=>'خريطة المعرفة: '+m[1]+' صفحة، '+m[2]+' رابط'],
+  [/^(.*) \u2014 (.*): (linked by you)?(?:, )?(?:mentioned together (\d+)\u00D7)?$/,m=>m[1]+' \u2014 '+m[2]+': '+[m[3]?'ربطتها بنفسك':null,m[4]?'ذُكرتا معًا '+m[4]+' مرة':null].filter(Boolean).join('، ')],
+  [/^(.*) \((project|person|topic)\) \u00B7 (\d+) notes on or mentioning it$/,m=>m[1]+' ('+AR_TYPE[m[2]]+') \u00B7 '+plN(m[3],'note')+' فيها أو تذكرها'],
+  [/^(.*), (project|person|topic), (\d+) notes$/,m=>m[1]+'، '+AR_TYPE[m[2]]+'، '+plN(m[3],'note')],
+  [/^Connections of "(.*)"$/,m=>'روابط «'+m[1]+'»'],
+  [/^Mentioned together (\d+)\u00D7$/,m=>'ذُكرتا معًا '+m[1]+' مرة'],
+  [/^(\d+) days? left$/,m=>'متبقٍ '+plN(m[1],'day')],
+  [/^Your free trial has (\d+) days? left\. Buy once and keep everything you have added\.$/,m=>'متبقٍ في تجربتك المجانية '+plN(m[1],'day')+'. اشترِ مرة واحدة واحتفظ بكل ما أضفته.'],
+  [/^Memory Vault is unlocked for (.*)\. Thank you!$/,m=>'تم فتح Memory Vault لـ '+m[1]+'. شكرًا لك!'],
+  [/^Unlocked for life\. Thank you, (.*)!$/,m=>'تم الفتح مدى الحياة. شكرًا لك يا '+m[1]+'!']
+];
+function trPat(s){if(LANG!=='ar'||typeof s!=='string')return s;for(const [re,fn] of PAT){const m=re.exec(s);if(m)return fn(m);}return s;}
+/* tr: exact phrase first (ignoring outer spaces), then the patterns for text that changes */
+function tr(s){
+  if(LANG!=='ar'||typeof s!=='string'||!s)return s;
+  if(Object.prototype.hasOwnProperty.call(AR,s))return AR[s];
+  const m=/^(\s*)([\s\S]*?)(\s*)$/.exec(s);
+  if(m[2]!==s&&Object.prototype.hasOwnProperty.call(AR,m[2]))return m[1]+AR[m[2]]+m[3];
+  return trPat(s);
+}
+const L=(en,ar)=>LANG==='ar'?ar:en;
+function applyLang(){
+  const de=document.documentElement; de.setAttribute('lang',LANG); de.setAttribute('dir',LANG==='ar'?'rtl':'ltr');
+  document.title=LANG==='ar'?'Memory Vault \u2013 تجربة مجانية لمدة 7 أيام':'Memory Vault \u2013 free 7-day trial';
+}
+function setLang(l){LANG=(l==='ar')?'ar':'en';writeStore(LANG_KEY,LANG);applyLang();render();}
+function langBtn(){
+  return h('button',{type:'button',class:'btn small lang-btn','data-nt':'1',lang:LANG==='ar'?'en':'ar',
+    'aria-label':LANG==='ar'?'Switch to English':'التبديل إلى العربية',onclick:()=>setLang(LANG==='ar'?'en':'ar')},LANG==='ar'?'English':'العربية');
+}
+
 
 /* ===================== undo ===================== */
 const undoStack=[];
@@ -425,6 +510,7 @@ function buildPrompt(text){
     '- quote: the exact words from the TEXT that prove the statement, copied character for character.',
     '- said_by: "me" only if I wrote or said it myself. "other" if it was pasted from someone else (an email, a message, someone else\'s transcript).',
     '- Skip small talk and anything you are not sure about.',
+    '- Write each statement in the same language as the TEXT (Arabic stays Arabic). Keep the JSON keys in English.',
     '',
     'My existing pages: '+(titles.length?JSON.stringify(titles):'none yet'),
     '',
@@ -641,39 +727,55 @@ function importJSON(raw){
   const s=sanitize(obj); s.scope='open'; state=s;
 }
 function loadExample(){
+  const ar=LANG==='ar';
   const pf=folderById('f_general')||state.folders.find(f=>!f.private);
-  const cf=addFolder('Client A',true);
+  const cf=addFolder(ar?'العميل أ':'Client A',true);
   const mk=(title,type,folder,lines,status)=>{
     const p=createPage(title,type,folder);
     lines.forEach(([k,t,ago])=>{const l=addLine(p,{kind:k,text:t,source:'you'});const d=new Date();d.setDate(d.getDate()-ago);l.date=localDate(d);l.ts=d.getTime();});
     if(status) p.status=status; return p;
   };
-  mk('Website relaunch','project',pf.id,[
+  const W=ar?'إعادة إطلاق الموقع':'Website relaunch', S=ar?'سارة':'Sara';
+  mk(W,'project',pf.id,ar?[
+    ['decision','تأجيل الإطلاق إلى 15 نوفمبر حتى تجهز الصور الجديدة.',5],
+    ['plan','نبدأ بصفحات الهبوط الثلاث، ثم المدونة.',3],
+    ['idea','إضافة فيديو قصير عن الفريق في صفحة «من نحن».',1],
+    ['update','وافقت سارة على صفحات الهبوط الجديدة.',2]
+  ]:[
     ['decision','Launch moves to 15 November so the new photos are ready.',5],
     ['plan','Draft the three landing pages first, then the blog.',3],
     ['idea','Add a short video of the team on the About page.',1],
     ['update','Sara signed off the new landing pages.',2]
-  ],'In progress');
-  const sara=mk('Sara','person',pf.id,[['preference','Prefers short written updates on Sunday evening.',9]],'');
-  const voice=mk('Brand voice','topic',pf.id,[['preference','Keep the same friendly tone as the Website relaunch pages.',4]],'');
+  ],ar?'قيد التنفيذ':'In progress');
+  const sara=mk(S,'person',pf.id,[['preference',ar?'تفضّل تحديثات مكتوبة قصيرة مساء الأحد.':'Prefers short written updates on Sunday evening.',9]],'');
+  const voice=mk(ar?'نبرة العلامة':'Brand voice','topic',pf.id,[['preference',ar?'حافظ على النبرة الودودة نفسها الموجودة في صفحات إعادة إطلاق الموقع.':'Keep the same friendly tone as the Website relaunch pages.',4]],'');
   sara.links.push(voice.id); voice.links.push(sara.id);
-  mk('Client A brand refresh','project',cf.id,[
+  mk(ar?'تحديث هوية العميل أ':'Client A brand refresh','project',cf.id,ar?[
+    ['decision','الإبقاء على الشعار الحالي وتحديث الألوان فقط.',6],
+    ['rejected','رُفضت إعادة بناء الهوية بالكامل بسبب الميزانية.',6]
+  ]:[
     ['decision','Keep the current logo and refresh only the colours.',6],
     ['rejected','Full rebrand was rejected because of the budget.',6]
-  ],'Waiting for approval');
-  state.held.push({id:uid(),subject:'Website relaunch',pageId:pageIdByTitle('Website relaunch'),pageTitle:'Website relaunch',kind:'decision',statement:'Hosting moves to the new provider before launch.',quote:'we should move hosting before launch',reasons:['not marked as said by you'],created:localDate(),folderId:pf.id});
+  ],ar?'بانتظار الموافقة':'Waiting for approval');
+  state.held.push({id:uid(),subject:W,pageId:pageIdByTitle(W),pageTitle:W,kind:'decision',
+    statement:ar?'نقل الاستضافة إلى المزوّد الجديد قبل الإطلاق.':'Hosting moves to the new provider before launch.',
+    quote:ar?'يجب أن ننقل الاستضافة قبل الإطلاق':'we should move hosting before launch',reasons:['not marked as said by you'],created:localDate(),folderId:pf.id});
 }
 function pageIdByTitle(t){const p=state.pages.find(x=>normText(x.title)===normText(t));return p?p.id:null;}
 
 /* ===================== ui helpers ===================== */
 function h(tag,props,...kids){
   const el=document.createElement(tag);
+  const nt=props&&props['data-nt'], user=props&&props.dir==='auto';
   for(const k of kids.flat(Infinity)){
     if(k==null||k===false) continue;
-    el.append(k&&k.nodeType?k:document.createTextNode(String(k)));
+    if(k&&k.nodeType){el.append(k);continue;}
+    const t=String(k);
+    el.append(document.createTextNode(nt?t:user?trPat(t):tr(t)));
   }
   if(props) for(const k in props){
-    const v=props[k]; if(v==null||v===false) continue;
+    let v=props[k]; if(v==null||v===false) continue;
+    if(k==='placeholder'||k==='title'||k==='aria-label') v=tr(v);
     if(k==='class') el.className=v;
     else if(k.slice(0,2)==='on'&&typeof v==='function') el.addEventListener(k.slice(2),v);
     else if(k==='value'||k==='checked'||k==='disabled'||k==='readOnly'||k==='rows'||k==='type'||k==='placeholder'||k==='id'||k==='tabIndex') el[k]=v;
@@ -682,7 +784,7 @@ function h(tag,props,...kids){
   return el;
 }
 function chip(text,cls){return h('span',{class:'chip'+(cls?' '+cls:'')},text);}
-function toast(msg,kind){
+function toast(msg,kind){msg=tr(msg);
   const box=document.getElementById('toasts'); if(!box) return;
   const t=h('div',{class:'toast'+(kind==='bad'?' bad':'')},msg); box.append(t);
   setTimeout(()=>{if(t.parentNode)t.remove();},3400);
@@ -691,7 +793,7 @@ function twoStep(label,confirmLabel,fn,cls){
   let armed=false,timer;
   const b=h('button',{type:'button',class:cls||'btn danger small'},label);
   b.addEventListener('click',()=>{
-    if(!armed){armed=true;b.textContent=confirmLabel;clearTimeout(timer);timer=setTimeout(()=>{armed=false;b.textContent=label;},4000);}
+    if(!armed){armed=true;b.textContent=tr(confirmLabel);clearTimeout(timer);timer=setTimeout(()=>{armed=false;b.textContent=tr(label);},4000);}
     else{clearTimeout(timer);fn();}
   });
   return b;
@@ -705,7 +807,7 @@ async function copyText(text,okMsg){
   toast(ok?(okMsg||'Copied.'):'Could not copy automatically. Select the text and copy it yourself.',ok?'':'bad');
 }
 function field(label,control,id){return h('div',{class:'grow'},h('label',{class:'f',for:id},label),control);}
-function opt(v,t){return h('option',{value:v},t);}
+function opt(v,t,nt){return h('option',{value:v,'data-nt':nt?'1':null},t);}
 
 /* ===================== views ===================== */
 let view='home';
@@ -723,7 +825,7 @@ function lineItem(p,l,o){
   o=o||{};
   const li=h('li',{class:'line'+(l.replacedOn?' old':'')},
     h('div',{class:'meta'},
-      o.showPage?h('button',{type:'button',class:'link',onclick:()=>{draft.pageId=p.id;go('pages');draft.pageId=p.id;render();}},p.title):null,
+      o.showPage?h('button',{type:'button',class:'link','data-nt':'1',onclick:()=>{draft.pageId=p.id;go('pages');draft.pageId=p.id;render();}},p.title):null,
       h('span',{class:'date'},fmtDate(l.date)),chip(KIND_LABEL[l.kind],'k-'+l.kind),sourceBadge(l)),
     h('p',{class:'txt',dir:'auto'},l.text),
     l.quote?h('blockquote',{dir:'auto'},l.quote):null,
@@ -750,7 +852,7 @@ function header(){
     h('div',{class:'bar'},
       h('div',{class:'brand'},h('span',{class:'mark','aria-hidden':'true'},'\u25D0'),h('span',null,'Memory Vault')),
       h('div',{class:'scope'},h('label',{for:'scope'},'Working in'),sel),
-      h('div',{class:'tools'},
+      h('div',{class:'tools'},langBtn(),
         h('button',{type:'button',class:'btn small',disabled:undoStack.length===0,onclick:undo,title:undoStack.length?'Undo: '+undoStack[undoStack.length-1].label:'Nothing to undo'},'Undo'),
         h('button',{type:'button',class:'btn small',onclick:cycleTheme,title:'Change theme'},'Theme: '+theme))),
     nav());
@@ -777,9 +879,9 @@ function homeView(){
       h('h2',null,'Your memory, kept in order'),
       h('p',{class:'sub',style:'margin-top:8px'},'Write ideas, thoughts and plans as they come. Memory Vault files each one as a dated line on the right page, so nothing gets lost between days.'),
       h('ol',{class:'steps'},
-        h('li',null,h('b',null,'Add'),' a note in your own words, or ',h('b',null,'Distill'),' a long conversation with your own AI.'),
-        h('li',null,h('b',null,'Review'),' anything it was unsure about. One click files it.'),
-        h('li',null,h('b',null,'Dossier'),' gives you a short note to paste at the start of any new AI session.')),
+        h('li',null,h('b',null,L('Add','أضِف')),L(' a note in your own words, or ',' ملاحظة بكلماتك، أو '),h('b',null,L('Distill','استخلِص')),L(' a long conversation with your own AI.',' محادثة طويلة بمساعدة الذكاء الاصطناعي الذي تستخدمه.')),
+        h('li',null,h('b',null,L('Review','راجِع')),L(' anything it was unsure about. One click files it.',' ما لم يكن متأكدًا منه. نقرة واحدة تحفظه.')),
+        h('li',null,h('b',null,L('Dossier','ملف السياق')),L(' gives you a short note to paste at the start of any new AI session.',' يعطيك ملاحظة قصيرة تلصقها في بداية أي محادثة جديدة مع الذكاء الاصطناعي.'))),
       h('div',{class:'row',style:'margin-top:16px'},
         h('button',{type:'button',class:'btn primary',onclick:()=>go('add')},'Add my first note'),
         h('button',{type:'button',class:'btn',onclick:()=>{act('Load example data',()=>loadExample());toast('Example data loaded. Reset it any time in Backup.');}},'Try with example data'))));
@@ -802,7 +904,7 @@ function addView(){
   const kind=h('select',{id:'add-kind',onchange:e=>{draft.addKind=e.target.value;}},KINDS.map(k=>opt(k,KIND_LABEL[k])));kind.value=draft.addKind;
   const okPage=draft.addPage==='new'||pages.some(p=>p.id===draft.addPage);
   if(!okPage) draft.addPage='new';
-  const pg=h('select',{id:'add-page',onchange:e=>{draft.addPage=e.target.value;render();}},opt('new','\uFF0B New page\u2026'),pages.map(p=>opt(p.id,p.title)));pg.value=draft.addPage;
+  const pg=h('select',{id:'add-page',onchange:e=>{draft.addPage=e.target.value;render();}},opt('new','\uFF0B New page\u2026'),pages.map(p=>opt(p.id,p.title,true)));pg.value=draft.addPage;
   const row=h('div',{class:'row',style:'margin-top:12px'},field('Kind',kind,'add-kind'),field('Page',pg,'add-page'));
   if(draft.addPage==='new'){
     const ti=h('input',{type:'text',id:'add-title',dir:'auto',placeholder:'e.g. Website relaunch',oninput:e=>{draft.addTitle=e.target.value;}});ti.value=draft.addTitle;
@@ -864,7 +966,7 @@ function reviewView(){
     const g=groups[k]; const existing=g.items.map(i=>i.pageId?visiblePageById(i.pageId):null).find(Boolean)||findVisibleByTitle(g.items[0].pageTitle||g.subject);
     let type='project'; const ty=h('select',{'aria-label':'Page type',onchange:e=>{type=e.target.value;}},TYPES.map(t=>opt(t,t)));
     const head=h('div',{class:'group-head'},
-      h('div',null,h('h3',null,g.subject),h('div',{class:'sub',style:'font-size:13px'},existing?'Adds to the page "'+existing.title+'".':'Creates a new page "'+(g.items[0].pageTitle||g.subject)+'".')),
+      h('div',null,h('h3',{'data-nt':'1'},g.subject),h('div',{class:'sub',style:'font-size:13px'},existing?'Adds to the page "'+existing.title+'".':'Creates a new page "'+(g.items[0].pageTitle||g.subject)+'".')),
       h('div',{class:'row',style:'align-items:center'},existing?null:ty,
         h('button',{type:'button',class:'btn primary small',onclick:()=>{const r=act('Accept '+g.items.length+' facts',()=>{g.items.forEach(i=>acceptHeld(i.id,type));});if(r.ok)toast('Filed '+g.items.length+'.');}},'Accept all')));
     const card=h('div',{class:'card'},head,h('ul',{class:'lines'},g.items.map(i=>
@@ -893,7 +995,7 @@ function pagesView(){
       const f=folderById(p.folderId);
       listBox.append(h('button',{type:'button',class:'page-card',onclick:()=>{draft.pageId=p.id;render();window.scrollTo(0,0);}},
         h('span',{class:'t',dir:'auto'},p.title),
-        h('span',{class:'m'},chip(p.type),f&&f.private?chip('\u{1F512} '+f.name,'private'):chip(f?f.name:''),p.status?chip(p.status):null,
+        h('span',{class:'m'},chip(p.type),f&&f.private?chip('\u{1F512} '+f.name,'private'):chip(f?f.name:''),p.status?h('span',{class:'chip','data-nt':'1'},p.status):null,
           h('span',null,p.lines.filter(l=>!l.replacedOn).length+' notes')),
         hits&&hits.length?h('span',{class:'m',dir:'auto'},'\u201C'+hits[0].text.slice(0,120)+'\u201D'):null));
     });
@@ -944,7 +1046,7 @@ function pageDetail(p){
   const linked=(p.links||[]).map(pageById).filter(x=>x&&canSee(x));
   const cand=visiblePages().filter(x=>x.id!==p.id&&!(p.links||[]).includes(x.id)).sort((a,b)=>normText(a.title).localeCompare(normText(b.title)));
   if(draft.linkTarget&&!cand.some(x=>x.id===draft.linkTarget)) draft.linkTarget='';
-  const ls=h('select',{id:'pd-link',onchange:e=>{draft.linkTarget=e.target.value;}},opt('','Choose a page\u2026'),cand.map(x=>opt(x.id,x.title)));ls.value=draft.linkTarget;
+  const ls=h('select',{id:'pd-link',onchange:e=>{draft.linkTarget=e.target.value;}},opt('','Choose a page\u2026'),cand.map(x=>opt(x.id,x.title,true)));ls.value=draft.linkTarget;
   box.append(h('div',{class:'card'},h('h3',null,'Linked pages'),
     h('p',{class:'sub',style:'margin:4px 0 10px;font-size:14px'},'Linked pages are joined by a solid line on the Map. A dotted line appears on its own when a note names another page.'),
     linked.length?h('ul',{class:'lines'},linked.map(x=>h('li',{class:'line'},h('div',{class:'pagehead'},
@@ -970,7 +1072,7 @@ function pageDetail(p){
 function dossierView(){
   const pages=visiblePages().sort(byActivity);
   if(draft.dossierPage!=='all'&&!pages.some(p=>p.id===draft.dossierPage)) draft.dossierPage='all';
-  const sel=h('select',{id:'ds-page',onchange:e=>{draft.dossierPage=e.target.value;}},opt('all','All pages in this view'),pages.map(p=>opt(p.id,p.title)));sel.value=draft.dossierPage;
+  const sel=h('select',{id:'ds-page',onchange:e=>{draft.dossierPage=e.target.value;}},opt('all','All pages in this view'),pages.map(p=>opt(p.id,p.title,true)));sel.value=draft.dossierPage;
   const n=h('input',{type:'text',id:'ds-n',inputmode:'numeric',oninput:e=>{draft.dossierN=e.target.value;}});n.value=String(draft.dossierN);
   const out=h('textarea',{rows:14,readOnly:true,'aria-label':'Dossier text'});out.value=draft.dossierText;
   return h('div',{class:'stack'},h('div',{class:'card'},
@@ -991,7 +1093,7 @@ function weekView(){
     h('button',{type:'button',class:'btn',disabled:!items.length,onclick:()=>copyText(text,'Summary copied.')},'Copy summary')));
   if(!items.length){box.append(h('div',{class:'card empty'},h('b',null,'A quiet week'),'Notes you add will be listed here by page.'));return box;}
   Object.values(byPage).forEach(g=>box.append(h('div',{class:'card'},
-    h('button',{type:'button',class:'link',style:'font-size:18px;font-family:\'Source Serif 4\',Georgia,serif;font-weight:600',onclick:()=>{draft.pageId=g.page.id;view='pages';render();window.scrollTo(0,0);}},g.page.title),
+    h('button',{type:'button',class:'link','data-nt':'1',style:'font-size:18px;font-family:\'Source Serif 4\',Georgia,serif;font-weight:600',onclick:()=>{draft.pageId=g.page.id;view='pages';render();window.scrollTo(0,0);}},g.page.title),
     h('ul',{class:'lines',style:'margin-top:6px'},g.lines.map(l=>lineItem(g.page,l))))));
   return box;
 }
@@ -1025,8 +1127,8 @@ const SVGNS='http://www.w3.org/2000/svg';
 function sv(tag,attrs,...kids){
   const el=document.createElementNS(SVGNS,tag);
   if(attrs) for(const k in attrs){const v=attrs[k];if(v==null||v===false)continue;
-    if(k.slice(0,2)==='on'&&typeof v==='function') el.addEventListener(k.slice(2),v); else el.setAttribute(k,String(v));}
-  for(const c of kids.flat(Infinity)){if(c==null||c===false)continue;el.append(c&&c.nodeType?c:document.createTextNode(String(c)));}
+    if(k.slice(0,2)==='on'&&typeof v==='function') el.addEventListener(k.slice(2),v); else el.setAttribute(k,k==='aria-label'?tr(String(v)):String(v));}
+  for(const c of kids.flat(Infinity)){if(c==null||c===false)continue;el.append(c&&c.nodeType?c:document.createTextNode(tag==='title'?tr(String(c)):String(c)));}
   return el;
 }
 function openPage(id){draft.pageId=id;view='pages';render();window.scrollTo(0,0);}
@@ -1136,7 +1238,7 @@ function mapView(){
     edgeEls.forEach(({e,path})=>{const inc=!!f&&(e.a===f||e.b===f);
       path.classList.toggle('hi',inc); path.classList.toggle('dim',!!f&&!inc); path.classList.toggle('rev',inc&&e.a===f);});
     rows.forEach((b,id)=>b.classList.toggle('on',f===id));
-    info.textContent=shown+' of '+N+' names shown'+(N>shown?' \u00B7 click a page for more':'');
+    info.textContent=tr(shown+' of '+N+' names shown'+(N>shown?' \u00B7 click a page for more':''));
     crumb.textContent='';
     crumb.append(h('button',{type:'button',class:'link',onclick:()=>setFocus(null)},'Whole map'));
     if(f) crumb.append(h('span',null,'/'),h('b',{dir:'auto',style:'color:var(--ink)'},titleById(f)));
@@ -1149,7 +1251,7 @@ function mapView(){
           h('span',{class:'shape s-'+typeOf.get(c.id),'aria-hidden':'true'}),
           h('button',{type:'button',class:'link',dir:'auto',onclick:()=>setFocus(c.id)},titleById(c.id)),
           c.linked?chip('Linked by you','k-plan'):null,c.co?chip('Mentioned together '+c.co+'\u00D7'):null,
-          h('button',{type:'button',class:'btn small',onclick:()=>openPage(c.id)},'Open'))))):
+          h('button',{type:'button',class:'btn small',onclick:()=>openPage(c.id)},L('Open','فتح')))))):
         h('p',{class:'sub'},'No connections yet. Name another page in a note, or link pages from the page screen.')));
     }
   }
@@ -1202,7 +1304,7 @@ function payCard(){
 function codeCard(){
   let val='';
   const unlock=()=>{try{const v=enterCode(val);view='home';render();window.scrollTo(0,0);toast('Unlocked for life. Thank you, '+v.name+'!');}catch(e){toast(e.message,'bad');}};
-  const inp=h('input',{type:'text',id:'code-in',placeholder:'e.g. SARA-7K2PQX',autocomplete:'off',autocapitalize:'characters',spellcheck:'false',
+  const inp=h('input',{type:'text',id:'code-in',dir:'ltr',placeholder:'e.g. SARA-7K2PQX',autocomplete:'off',autocapitalize:'characters',spellcheck:'false',
     oninput:e=>{val=e.target.value;},onkeydown:e=>{if(e.key==='Enter')unlock();}});
   return h('section',{class:'card'},h('h2',null,'Already paid? Enter your access code'),
     h('p',{class:'sub',style:'margin:-4px 0 12px'},'You get your personal code on WhatsApp after your payment is confirmed.'),
@@ -1223,7 +1325,7 @@ function faqCard(){
     ['Is this a subscription?','No. You pay once and keep access for life.'],
     ['Where are my notes saved?','In the browser you use it in, on your own device. Keep using the same browser, and copy a backup from the Backup tab now and then, because clearing your browser data also clears your notes.'],
     ['Do I need an account or an AI subscription?','No account is needed. The AI step is optional: you can copy a prompt into any AI you already use, or just write your notes yourself.'],
-    ['Does it work in Arabic?','Yes. Arabic notes are shown right to left. The buttons and menus are in English.']];
+    ['Does it work in Arabic?','Yes. Use the language button at the top to switch the whole app to Arabic. Arabic notes are shown right to left.']];
   return h('section',{class:'card faq'},h('h2',null,'Questions'),qa.map(([q,a])=>h('details',null,h('summary',null,q),h('p',null,a))));
 }
 function landingView(){
@@ -1236,7 +1338,7 @@ function landingView(){
     ['A ready context note for any AI.','Copy a short summary of what you already decided and paste it into a new chat.'],
     ['Your notes stay with you.','They are saved in your own browser. No account, no sign-up. Back them up whenever you like.']];
   return h('div',{class:'wrap landing'},
-    h('div',{class:'brand'},h('span',{class:'mark','aria-hidden':'true'},'\u25D0'),h('span',null,'Memory Vault')),
+    h('div',{class:'lp-top'},h('div',{class:'brand'},h('span',{class:'mark','aria-hidden':'true'},'\u25D0'),h('span',null,'Memory Vault')),langBtn()),
     h('section',{class:'hero'},
       h('h1',null,'Your ideas, thoughts and plans, never lost again.'),
       h('p',null,'Write things down as they come. Memory Vault files each one as a dated note on the right page, so you can pick up any project without starting from zero.'),
@@ -1246,7 +1348,7 @@ function landingView(){
     h('div',{class:'stack'},
       h('section',{class:'card'},h('h2',null,'What you get'),h('ul',{class:'feat'},feats.map(([b,t])=>h('li',null,h('span',{class:'tick'},'\u2713'),h('span',null,h('b',null,b),' '+t))))),
       payCard(),codeCard(),stepsCard(),faqCard()),
-    h('p',{class:'foot'},'Questions before you buy? Message us on ',h('a',{href:PAY.waPlain,target:'_blank',rel:'noopener',style:'color:inherit'},'WhatsApp'),'.'));
+    h('p',{class:'foot'},'Questions before you buy? Message us on',' ',h('a',{href:PAY.waPlain,target:'_blank',rel:'noopener',style:'color:inherit'},'WhatsApp'),'.'));
 }
 function buyView(){
   const st=licStatus();
@@ -1260,26 +1362,27 @@ function buyView(){
 function licBanner(){
   const st=licStatus();
   if(st.mode==='trial') return h('div',{class:'wrap',style:'padding-bottom:0;padding-top:14px'},h('div',{class:'trialbar',id:'trialbar'},
-    h('span',null,'Free trial: ',h('b',null,st.daysLeft+' day'+(st.daysLeft>1?'s':'')+' left')),
+    h('span',null,'Free trial:',' ',h('b',null,st.daysLeft+' day'+(st.daysLeft>1?'s':'')+' left')),
     h('button',{type:'button',class:'btn primary small',onclick:()=>go('buy')},'Buy lifetime access')));
   if(st.mode==='expired') return h('div',{class:'wrap',style:'padding-bottom:0;padding-top:14px'},h('div',{class:'trialbar ended',id:'trialbar'},
-    h('span',null,h('b',null,'Your free trial has ended.'),' Your notes are safe and you can still read them. Unlock to keep adding notes.'),
+    h('span',null,h('b',null,'Your free trial has ended.'),' ','Your notes are safe and you can still read them. Unlock to keep adding notes.'),
     h('button',{type:'button',class:'btn primary small',onclick:()=>go('buy')},'Unlock')));
   return null;
 }
 function render(){
   const root=document.getElementById('app'); root.textContent='';
   if(licStatus().mode==='new'){root.append(landingView());return;}
-  root.append(header(),licBanner(),banner(),main());
+  root.append(...[header(),licBanner(),banner(),main()].filter(Boolean));
 }
 
 /* ===================== boot ===================== */
+applyLang();
 const savedTheme=readStore(THEME_KEY);
 if(savedTheme==='light'||savedTheme==='dark') document.documentElement.setAttribute('data-theme',savedTheme);
 render();
 
 /* small hook so the logic can be tested without clicking */
-window.MV={license:{status:licStatus,startTrial:startTrial,enterCode:enterCode},get state(){return state;},set state(v){state=v;},render:render,go:go,undo:undo,api:{addEntry,runDistill,parseFacts,buildPrompt,acceptHeld,discardHeld,setStatus,correctLine,movePage,deletePage,addFolder,setFolderPrivate,deleteFolder,searchPages,weekLines,buildDossier,exportJSON,exportMarkdown,importJSON,loadExample,visiblePages,visibleHeld,canSee,act,createPage,addLine,normText,buildGraph,linkPages,unlinkPages,titleHit},undoStack:undoStack};
+window.MV={lang:{get:()=>LANG,set:setLang,tr:tr},license:{status:licStatus,startTrial:startTrial,enterCode:enterCode},get state(){return state;},set state(v){state=v;},render:render,go:go,undo:undo,api:{addEntry,runDistill,parseFacts,buildPrompt,acceptHeld,discardHeld,setStatus,correctLine,movePage,deletePage,addFolder,setFolderPrivate,deleteFolder,searchPages,weekLines,buildDossier,exportJSON,exportMarkdown,importJSON,loadExample,visiblePages,visibleHeld,canSee,act,createPage,addLine,normText,buildGraph,linkPages,unlinkPages,titleHit},undoStack:undoStack};
 })();
 </script>
 </body>
