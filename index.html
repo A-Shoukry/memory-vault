@@ -858,7 +858,7 @@ function header(){
     nav());
 }
 function nav(){
-  const tabs=[['home','Home'],['add','Add'],['distill','Distill'],['review','Review'],['pages','Pages'],['map','Map'],['dossier','Dossier'],['week','This week'],['backup','Backup']];
+  const tabs=[['home','Home'],['add','Add'],['pages','Pages'],['map','Map']];
   const n=visibleHeld().length;
   return h('nav',{class:'tabs','aria-label':'Sections'},tabs.map(([id,label])=>
     h('button',{type:'button',class:'tab'+(view===id?' on':''),onclick:()=>go(id),'aria-current':view===id?'page':null},label,
@@ -874,6 +874,19 @@ function cycleTheme(){
 function homeView(){
   const pages=visiblePages(), week=weekLines(), held=visibleHeld();
   const box=h('div',{class:'stack'});
+
+  const videoCard = h('div', {class: 'card', style: 'margin-bottom: 16px;'},
+      h('h3', null, 'Second Brain Overview'),
+      h('div', {style: 'position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; margin-top: 10px;'},
+          h('iframe', {
+              style: 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;',
+              src: 'https://www.youtube.com/embed/YOUR_VIDEO_ID',
+              allowfullscreen: true
+          })
+      )
+  );
+  box.append(videoCard);
+
   if(!state.pages.length&&!state.held.length){
     box.append(h('div',{class:'card'},
       h('h2',null,'Your memory, kept in order'),
@@ -1149,241 +1162,4 @@ function mapView(){
   const N=ring.length, R=220;
   const baseA=new Map(ring.map((n,i)=>[n.id,-Math.PI/2+2*Math.PI*i/Math.max(1,N)]));
   const topSet=new Set((N<=40?ring:ring.slice().sort((a,b)=>b.size-a.size).slice(0,40)).map(n=>n.id));
-  const neighbours=id=>{const s=new Set();if(!id)return s;s.add(id);g.edges.forEach(e=>{if(e.a===id)s.add(e.b);if(e.b===id)s.add(e.a);});return s;};
-
-  /* side panel */
-  const chips=h('div',{class:'mapchips'},['project','person','topic'].map(t=>h('button',{type:'button',class:'mchip'+(draft.mapTypes[t]?' on':''),'aria-pressed':draft.mapTypes[t]?'true':'false',
-    onclick:()=>{draft.mapTypes[t]=!draft.mapTypes[t];if(!Object.values(draft.mapTypes).some(Boolean))draft.mapTypes[t]=true;draft.mapAnimate=true;render();}},
-    h('span',{class:'shape s-'+t,'aria-hidden':'true'}),TYPE_LABEL[t]+' '+counts[t])));
-  const rows=new Map();
-  const ranked=g.nodes.slice().sort((a,b)=>b.size-a.size||normText(a.title).localeCompare(normText(b.title)));
-  const list=h('div',{class:'maplist'},ranked.map(n=>{
-    const b=h('button',{type:'button',class:'mrow',onclick:()=>setFocus(draft.mapFocus===n.id?null:n.id)},
-      h('span',{class:'mrow-t',dir:'auto'},h('span',{class:'shape s-'+n.type,'aria-hidden':'true'}),n.title),
-      h('span',{class:'mrow-n'},String(n.size)),
-      h('span',{class:'mrow-bar c-'+n.type,style:'width:'+Math.round(100*n.size/maxS)+'%'}));
-    rows.set(n.id,b); return b;}));
-  const side=h('div',{class:'card mapside'},h('div',{class:'mlabel'},'Show only'),chips,h('div',{class:'mlabel',style:'margin-top:16px'},g.nodes.length+' pages, by size'),list);
-
-  /* the ring: built once, then moved by place() */
-  const svgEl=sv('svg',{viewBox:'-460 -460 920 920',class:'mapsvg',role:'img','aria-label':'Knowledge map: '+N+' pages, '+g.edges.length+' connections'});
-  const gE=sv('g',null), gN=sv('g',null);
-  const edgeEls=g.edges.map(e=>{
-    const desc=[e.linked?'linked by you':null,e.co?'mentioned together '+e.co+'\u00D7':null].filter(Boolean).join(', ');
-    const path=sv('path',{class:'medge c-'+typeOf.get(e.a)+(e.linked?'':' co'),'stroke-width':e.linked?2:Math.min(3.5,1+(e.co-1)*0.5)},
-      sv('title',null,titleById(e.a)+' \u2014 '+titleById(e.b)+': '+desc));
-    gE.append(path); return {e:e,path:path};});
-  const els=new Map();
-  ring.forEach(n=>{
-    const L=n.size?4+40*n.size/maxS:0;
-    const grp=sv('g',{class:'mnode c-'+n.type,tabindex:0,role:'button','aria-label':n.title+', '+n.type+', '+n.size+' notes'});
-    grp.append(sv('title',null,n.title+' ('+n.type+') \u00B7 '+n.size+' notes on or mentioning it'));
-    const bar=L?sv('line',{class:'mbar'}):null; if(bar) grp.append(bar);
-    const hit=sv('circle',{r:13,class:'mhit'}); grp.append(hit);
-    const shape=n.type==='person'?sv('circle',{r:5.5,class:'mshape'}):sv('path',{class:'mshape'}); grp.append(shape);
-    const label=sv('text',{'dominant-baseline':'middle',class:'mlbl'},n.title.length>26?n.title.slice(0,25)+'\u2026':n.title); grp.append(label);
-    const tog=()=>setFocus(draft.mapFocus===n.id?null:n.id);
-    grp.addEventListener('click',tog);
-    grp.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();tog();}});
-    grp.addEventListener('mouseenter',()=>hover(n.id,true)); grp.addEventListener('mouseleave',()=>hover(n.id,false));
-    grp.addEventListener('focus',()=>hover(n.id,true)); grp.addEventListener('blur',()=>hover(n.id,false));
-    gN.append(grp);
-    els.set(n.id,{grp:grp,bar:bar,hit:hit,shape:shape,label:label,L:L,type:n.type,x:0,y:0});
-  });
-  svgEl.append(gE,gN);
-
-  let phi=typeof draft.mapPhi==='number'?draft.mapPhi:0, grow=1, raf=0;
-  const f1=v=>v.toFixed(1);
-  function place(){
-    els.forEach((o,id)=>{
-      const a=baseA.get(id)+phi, ca=Math.cos(a), sa=Math.sin(a), x=ca*R, y=sa*R, L=o.L*grow;
-      o.x=x; o.y=y;
-      if(o.bar){o.bar.setAttribute('x1',f1(ca*(R+9)));o.bar.setAttribute('y1',f1(sa*(R+9)));o.bar.setAttribute('x2',f1(ca*(R+9+L)));o.bar.setAttribute('y2',f1(sa*(R+9+L)));}
-      o.hit.setAttribute('cx',f1(x)); o.hit.setAttribute('cy',f1(y));
-      if(o.type==='person'){o.shape.setAttribute('cx',f1(x));o.shape.setAttribute('cy',f1(y));}
-      else if(o.type==='project') o.shape.setAttribute('d','M'+f1(x-5)+' '+f1(y-5)+'h10v10h-10Z');
-      else o.shape.setAttribute('d','M'+f1(x)+' '+f1(y-6.5)+'L'+f1(x+6.5)+' '+f1(y)+'L'+f1(x)+' '+f1(y+6.5)+'L'+f1(x-6.5)+' '+f1(y)+'Z');
-      const rl=R+9+L+7; let deg=a*180/Math.PI, anchor='start'; if(ca<-1e-9){deg+=180;anchor='end';}
-      o.label.setAttribute('transform','translate('+f1(ca*rl)+' '+f1(sa*rl)+') rotate('+f1(deg)+')');
-      o.label.setAttribute('text-anchor',anchor);
-    });
-    const k=(R-10)/R;
-    edgeEls.forEach(({e,path})=>{
-      const p1=els.get(e.a),p2=els.get(e.b), x1=p1.x*k,y1=p1.y*k,x2=p2.x*k,y2=p2.y*k;
-      path.setAttribute('d','M'+f1(x1)+' '+f1(y1)+' Q'+f1((x1+x2)/2*0.25)+' '+f1((y1+y2)/2*0.25)+' '+f1(x2)+' '+f1(y2));
-    });
-  }
-  function animate(dur,fn,done){
-    if(raf){cancelAnimationFrame(raf);raf=0;}
-    if(reduce||typeof requestAnimationFrame!=='function'){fn(1);if(done)done();return;}
-    const t0=performance.now();
-    const step=now=>{const t=Math.min(1,Math.max(0,(now-t0)/dur)), e=1-Math.pow(1-t,3);fn(e);
-      if(t<1) raf=requestAnimationFrame(step); else {raf=0;if(done)done();}};
-    raf=requestAnimationFrame(step);
-  }
-  function hover(id,on){
-    edgeEls.forEach(({e,path})=>{if(e.a===id||e.b===id) path.classList.toggle('hover',on);});
-    const o=els.get(id); if(o&&!topSet.has(id)&&!neighbours(draft.mapFocus).has(id)) o.label.classList.toggle('hide',!on);
-  }
-
-  /* the parts that change when the focus changes */
-  const crumb=h('div',{class:'crumb'}), info=h('span',null), connBox=h('div',null);
-  function applyFocus(){
-    const f=draft.mapFocus, nb=neighbours(f); let shown=0;
-    els.forEach((o,id)=>{
-      o.grp.classList.toggle('dim',!!f&&!nb.has(id)); o.grp.classList.toggle('sel',f===id);
-      const show=topSet.has(id)||nb.has(id); if(show) shown++;
-      o.label.classList.toggle('hide',!show); o.label.classList.toggle('sel',f===id);
-    });
-    edgeEls.forEach(({e,path})=>{const inc=!!f&&(e.a===f||e.b===f);
-      path.classList.toggle('hi',inc); path.classList.toggle('dim',!!f&&!inc); path.classList.toggle('rev',inc&&e.a===f);});
-    rows.forEach((b,id)=>b.classList.toggle('on',f===id));
-    info.textContent=tr(shown+' of '+N+' names shown'+(N>shown?' \u00B7 click a page for more':''));
-    crumb.textContent='';
-    crumb.append(h('button',{type:'button',class:'link',onclick:()=>setFocus(null)},'Whole map'));
-    if(f) crumb.append(h('span',null,'/'),h('b',{dir:'auto',style:'color:var(--ink)'},titleById(f)));
-    connBox.textContent='';
-    if(f){
-      const inc=g.edges.filter(e=>e.a===f||e.b===f).map(e=>({id:e.a===f?e.b:e.a,linked:e.linked,co:e.co})).sort((a,b)=>(b.linked-a.linked)||(b.co-a.co));
-      connBox.append(h('div',{class:'card'},
-        h('div',{class:'group-head'},h('h3',{dir:'auto'},'Connections of "'+titleById(f)+'"'),h('button',{type:'button',class:'btn small',onclick:()=>openPage(f)},'Open page')),
-        inc.length?h('ul',{class:'lines'},inc.map(c=>h('li',{class:'line'},h('div',{class:'pagehead'},
-          h('span',{class:'shape s-'+typeOf.get(c.id),'aria-hidden':'true'}),
-          h('button',{type:'button',class:'link',dir:'auto',onclick:()=>setFocus(c.id)},titleById(c.id)),
-          c.linked?chip('Linked by you','k-plan'):null,c.co?chip('Mentioned together '+c.co+'\u00D7'):null,
-          h('button',{type:'button',class:'btn small',onclick:()=>openPage(c.id)},L('Open','فتح')))))):
-        h('p',{class:'sub'},'No connections yet. Name another page in a note, or link pages from the page screen.')));
-    }
-  }
-  /* bring the chosen page to the front (right side, name reads level) */
-  function setFocus(id){
-    draft.mapFocus=id; applyFocus();
-    if(!id) return;
-    let d=-baseA.get(id)-phi; d=((d+Math.PI)%(2*Math.PI)+2*Math.PI)%(2*Math.PI)-Math.PI;
-    const from=phi, to=phi+d, g0=grow;
-    if(Math.abs(d)<1e-3&&g0===1){draft.mapPhi=phi;return;}
-    animate(750,e=>{phi=from+(to-from)*e;grow=g0+(1-g0)*e;place();},()=>{phi=to;grow=1;draft.mapPhi=phi;place();});
-  }
-
-  applyFocus();
-  if(draft.mapAnimate&&!reduce){
-    draft.mapAnimate=false;
-    const to=phi, from=phi-0.9; grow=0; phi=from; place();
-    svgEl.classList.add('intro');
-    setTimeout(()=>svgEl.classList.remove('intro'),250);
-    animate(950,e=>{phi=from+(to-from)*e;grow=e;place();},()=>{phi=to;grow=1;place();});
-  }else{draft.mapAnimate=false;place();}
-
-  const canvas=h('div',{class:'card mapcanvas'},
-    h('div',{class:'maphead'},crumb,info),
-    svgEl,
-    h('div',{class:'legend'},
-      h('span',null,h('span',{class:'shape s-project'}),'project'),h('span',null,h('span',{class:'shape s-person'}),'person'),h('span',null,h('span',{class:'shape s-topic'}),'topic'),
-      h('span',null,h('span',{class:'lg-solid'}),'you linked it'),h('span',null,h('span',{class:'lg-dash'}),'mentioned together'),
-      h('span',null,'bar length: notes on or mentioning it')),
-    g.edges.length?null:h('p',{class:'sub',style:'margin-top:8px;font-size:13.5px'},'No lines yet. Name another page in a note, or link two pages from the page screen.'));
-  box.append(h('div',{class:'mapgrid'},side,canvas),connBox);
-  return box;
-}
-function main(){
-  const body=view==='home'?homeView():view==='add'?addView():view==='distill'?distillView():view==='review'?reviewView():view==='pages'?pagesView():view==='map'?mapView():view==='dossier'?dossierView():view==='week'?weekView():view==='buy'?buyView():backupView();
-  return h('main',{class:'wrap'},body);
-}
-function payCard(){
-  return h('section',{class:'card price',id:'buy'},h('h2',null,'Get lifetime access'),
-    h('div',{class:'divider'},'One-time fee \u2014 lifetime access'),
-    h('div',{class:'pay'},
-      h('a',{id:'pay_instapay',href:PAY.instapay,target:'_blank',rel:'noopener'},
-        h('span',{class:'method'},h('span',{class:'dot',style:'background:#5a2d82'}),'InstaPay'),h('span',{class:'where'},'Inside Egypt'),
-        h('span',{class:'amount'},'499 EGP'),h('span',{class:'go'},'Pay with InstaPay \u2192')),
-      h('a',{id:'pay_paypal',href:PAY.paypal,target:'_blank',rel:'noopener'},
-        h('span',{class:'method'},h('span',{class:'dot',style:'background:#0070ba'}),'PayPal'),h('span',{class:'where'},'Outside Egypt'),
-        h('span',{class:'amount'},'$10'),h('span',{class:'go'},'Pay with PayPal \u2192'))),
-    h('p',{class:'small'},'With InstaPay, enter 499 EGP as the amount if it is not filled in for you.'));
-}
-function codeCard(){
-  let val='';
-  const unlock=()=>{try{const v=enterCode(val);view='home';render();window.scrollTo(0,0);toast('Unlocked for life. Thank you, '+v.name+'!');}catch(e){toast(e.message,'bad');}};
-  const inp=h('input',{type:'text',id:'code-in',dir:'ltr',placeholder:'e.g. SARA-7K2PQX',autocomplete:'off',autocapitalize:'characters',spellcheck:'false',
-    oninput:e=>{val=e.target.value;},onkeydown:e=>{if(e.key==='Enter')unlock();}});
-  return h('section',{class:'card'},h('h2',null,'Already paid? Enter your access code'),
-    h('p',{class:'sub',style:'margin:-4px 0 12px'},'You get your personal code on WhatsApp after your payment is confirmed.'),
-    h('div',{class:'row'},h('div',{class:'grow'},h('label',{class:'f',for:'code-in'},'Access code'),inp),
-      h('button',{type:'button',class:'btn primary',id:'code_unlock',onclick:unlock},'Unlock')));
-}
-function stepsCard(){
-  return h('section',{class:'card'},h('h2',null,'How you get it'),
-    h('ol',{class:'lp-steps'},
-      h('li',null,h('span',null,'Pay once with InstaPay or PayPal.')),
-      h('li',null,h('span',null,'Send a screenshot of your payment to us on WhatsApp.')),
-      h('li',null,h('span',null,'Get your personal access code on WhatsApp and enter it here. Memory Vault unlocks for life, and everything you added during the trial stays.'))),
-    h('a',{class:'wa',id:'send_receipt',href:PAY.wa,target:'_blank',rel:'noopener'},'Send my receipt on WhatsApp'));
-}
-function faqCard(){
-  const qa=[
-    ['What happens when the free trial ends?','Your notes stay safe. You can still read them, open the Map and copy a backup. To keep adding and changing notes, buy lifetime access and enter your access code.'],
-    ['Is this a subscription?','No. You pay once and keep access for life.'],
-    ['Where are my notes saved?','In the browser you use it in, on your own device. Keep using the same browser, and copy a backup from the Backup tab now and then, because clearing your browser data also clears your notes.'],
-    ['Do I need an account or an AI subscription?','No account is needed. The AI step is optional: you can copy a prompt into any AI you already use, or just write your notes yourself.'],
-    ['Does it work in Arabic?','Yes. Use the language button at the top to switch the whole app to Arabic. Arabic notes are shown right to left.']];
-  return h('section',{class:'card faq'},h('h2',null,'Questions'),qa.map(([q,a])=>h('details',null,h('summary',null,q),h('p',null,a))));
-}
-function landingView(){
-  const feats=[
-    ['Notes filed for you.','Ideas, plans, decisions and thoughts, each saved with its date on the page it belongs to.'],
-    ['A living Knowledge Map.','See every project, person and topic on one animated ring, with lines showing how they connect.'],
-    ['Turn long chats into clean notes.','Paste a conversation, let your own AI pull out the key points, and the important ones are checked before they are saved.'],
-    ['One-click review.','Anything that isn\u2019t certain waits for you to accept or discard, and every action can be undone.'],
-    ['Private folders.','Keep each client\u2019s work apart. A private folder never shows up anywhere else.'],
-    ['A ready context note for any AI.','Copy a short summary of what you already decided and paste it into a new chat.'],
-    ['Your notes stay with you.','They are saved in your own browser. No account, no sign-up. Back them up whenever you like.']];
-  return h('div',{class:'wrap landing'},
-    h('div',{class:'lp-top'},h('div',{class:'brand'},h('span',{class:'mark','aria-hidden':'true'},'\u25D0'),h('span',null,'Memory Vault')),langBtn()),
-    h('section',{class:'hero'},
-      h('h1',null,'Your ideas, thoughts and plans, never lost again.'),
-      h('p',null,'Write things down as they come. Memory Vault files each one as a dated note on the right page, so you can pick up any project without starting from zero.'),
-      h('div',{class:'cta'},
-        h('button',{type:'button',class:'btn primary big',id:'start_trial',onclick:()=>{startTrial();view='home';render();window.scrollTo(0,0);toast('Your 7-day free trial has started. Enjoy!');}},'Start your 7-day free trial'),
-        h('span',{class:'sub'},'No account, no card. Everything unlocked for 7 days.'))),
-    h('div',{class:'stack'},
-      h('section',{class:'card'},h('h2',null,'What you get'),h('ul',{class:'feat'},feats.map(([b,t])=>h('li',null,h('span',{class:'tick'},'\u2713'),h('span',null,h('b',null,b),' '+t))))),
-      payCard(),codeCard(),stepsCard(),faqCard()),
-    h('p',{class:'foot'},'Questions before you buy? Message us on',' ',h('a',{href:PAY.waPlain,target:'_blank',rel:'noopener',style:'color:inherit'},'WhatsApp'),'.'));
-}
-function buyView(){
-  const st=licStatus();
-  const sub=st.mode==='trial'?'Your free trial has '+st.daysLeft+' day'+(st.daysLeft>1?'s':'')+' left. Buy once and keep everything you have added.':
-    st.mode==='expired'?'Your free trial has ended. Your notes are safe. Unlock to keep adding and changing them.':
-    st.mode==='paid'?'Memory Vault is unlocked for '+st.name+'. Thank you!':'';
-  return h('div',{class:'stack'},
-    h('div',null,h('h2',null,st.mode==='paid'?'You have lifetime access':'Lifetime access'),h('p',{class:'sub',style:'margin-top:6px'},sub)),
-    st.mode==='paid'?null:payCard(),st.mode==='paid'?null:codeCard(),st.mode==='paid'?null:stepsCard());
-}
-function licBanner(){
-  const st=licStatus();
-  if(st.mode==='trial') return h('div',{class:'wrap',style:'padding-bottom:0;padding-top:14px'},h('div',{class:'trialbar',id:'trialbar'},
-    h('span',null,'Free trial:',' ',h('b',null,st.daysLeft+' day'+(st.daysLeft>1?'s':'')+' left')),
-    h('button',{type:'button',class:'btn primary small',onclick:()=>go('buy')},'Buy lifetime access')));
-  if(st.mode==='expired') return h('div',{class:'wrap',style:'padding-bottom:0;padding-top:14px'},h('div',{class:'trialbar ended',id:'trialbar'},
-    h('span',null,h('b',null,'Your free trial has ended.'),' ','Your notes are safe and you can still read them. Unlock to keep adding notes.'),
-    h('button',{type:'button',class:'btn primary small',onclick:()=>go('buy')},'Unlock')));
-  return null;
-}
-function render(){
-  const root=document.getElementById('app'); root.textContent='';
-  if(licStatus().mode==='new'){root.append(landingView());return;}
-  root.append(...[header(),licBanner(),banner(),main()].filter(Boolean));
-}
-
-/* ===================== boot ===================== */
-applyLang();
-const savedTheme=readStore(THEME_KEY);
-if(savedTheme==='light'||savedTheme==='dark') document.documentElement.setAttribute('data-theme',savedTheme);
-render();
-
-/* small hook so the logic can be tested without clicking */
-window.MV={lang:{get:()=>LANG,set:setLang,tr:tr},license:{status:licStatus,startTrial:startTrial,enterCode:enterCode},get state(){return state;},set state(v){state=v;},render:render,go:go,undo:undo,api:{addEntry,runDistill,parseFacts,buildPrompt,acceptHeld,discardHeld,setStatus,correctLine,movePage,deletePage,addFolder,setFolderPrivate,deleteFolder,searchPages,weekLines,buildDossier,exportJSON,exportMarkdown,importJSON,loadExample,visiblePages,visibleHeld,canSee,act,createPage,addLine,normText,buildGraph,linkPages,unlinkPages,titleHit},undoStack:undoStack};
-})();
-</script>
-</body>
-</html>
+  const neighbours=id=>{const s=new Set();if(!id)return s;s.add(id);g.edges.forEach(e=>{if(e.a===id)s.add(e.b);if(e.b===id)s
